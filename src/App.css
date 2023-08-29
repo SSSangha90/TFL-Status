@@ -7,6 +7,36 @@
   pointer-events: none;
 }
 
+table {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2rem;
+  width: 20rem;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: rgb(43, 43, 179);
+  color: #fff;
+}
+
+.modal {
+  width: 20rem;
+  height: auto;
+  background-color: rgb(43, 43, 179);
+  color: #fff;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

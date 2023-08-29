@@ -3,17 +3,20 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 const TFL = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [station, setStation] = useState();
 
-  const fetchTubeData = () => {
-    fetch("https://api.tfl.gov.uk/Line/Mode/tube/status")
+  const fetchTubeData = async () => {
+    await fetch("https://api.tfl.gov.uk/Line/Mode/tube/status")
       .then((response) => {
         return response.json();
       })
       .then((d) => {
         const services = d.map((s) => ({
-          id: d.id,
+          id: s.id,
           station: s.name,
           service: s.lineStatuses[0].statusSeverityDescription,
+          reason: s.lineStatuses[0].reason ?? null,
         }));
         setData(services);
       });
@@ -23,30 +26,35 @@ const TFL = () => {
     fetchTubeData();
   }, []);
 
-  const stationInformation = (d) => {
-    console.log(d);
-  };
+  const stationInformation = useCallback((e, d) => {
+    setShowModal(true);
+    setStation(d);
+  }, []);
 
   const filterStations = useCallback((e) => {
     setFilter(e.target.value);
   }, []);
 
-  // groups.filter((group) => group.title.toLowerCase().includes(search.toLowerCase()))
   const filteredData = useMemo(() => {
     return data
       .filter((d) => d.station.toLowerCase().includes(filter.toLowerCase()))
       .map((d) => (
-        <tr key={d.id} onClick={stationInformation(d.id)}>
+        <tr key={d.id} onClick={(e) => stationInformation(e, d)}>
           <td>{d.station}</td>
           <td>{d.service}</td>
         </tr>
       ));
-  }, [data, filter]);
+  }, [data, filter, stationInformation]);
 
   return (
     <>
       <h2>TFL Updates</h2>
-      <input type="text" value={filter} onChange={filterStations} />
+      <input
+        type="search"
+        placeholder="Search station..."
+        value={filter}
+        onChange={filterStations}
+      />
       <table>
         <tr>
           <th>Station</th>
@@ -54,6 +62,14 @@ const TFL = () => {
         </tr>
         {filteredData}
       </table>
+      {showModal && (
+        <div className="modal">
+          <h3>{station.station}</h3>
+          <p>{station.service}</p>
+          <p>{station.reason}</p>
+          <button onClick={(e) => setShowModal(false)}>Close</button>
+        </div>
+      )}
     </>
   );
 };
