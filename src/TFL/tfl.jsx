@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 const TFL = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState("");
-  const [showModal, setShowModal] = useState(false);
   const [station, setStation] = useState();
 
   const fetchTubeData = async () => {
@@ -26,14 +25,8 @@ const TFL = () => {
     fetchTubeData();
   }, []);
 
-  const stationInformation = useCallback((e, d) => {
-    setShowModal(true);
-    setStation(d);
-  }, []);
-
-  const filterStations = useCallback((e) => {
-    setFilter(e.target.value);
-  }, []);
+  const stationInformation = useCallback((e, d) => setStation(d), []);
+  const filterStations = useCallback((e) => setFilter(e.target.value), []);
 
   const filteredData = useMemo(() => {
     return data
@@ -62,12 +55,12 @@ const TFL = () => {
         </tr>
         {filteredData}
       </table>
-      {showModal && (
+      {station && (
         <div className="modal">
           <h3>{station.station}</h3>
           <p>{station.service}</p>
           <p>{station.reason}</p>
-          <button onClick={(e) => setShowModal(false)}>Close</button>
+          <button onClick={(e) => setStation(null)}>Close</button>
         </div>
       )}
     </>
